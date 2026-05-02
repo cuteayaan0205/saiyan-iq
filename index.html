@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07080f">
+<meta name="description" content="SAIYAN IQ - The ultimate Dragon Ball Legends quiz app">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Saiyan IQ">
+<link rel="manifest" href="manifest.json">
+<title>SAIYAN IQ — DBL Quiz App</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#07080f; --card:rgba(14,15,28,0.96); --border:#1c1e35;
+  --orange:#ff6a00; --yellow:#ffd000; --blue:#00c3ff;
+  --red:#ff2d55; --green:#00e676; --purple:#b044ff;
+  --text:#f0f0ff; --muted:#6a6a9a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Rajdhani',sans-serif;min-height:100vh;background:var(--bg);color:var(--text);overflow-x:hidden;}
+
+/* ── BACKGROUND ── */
+.bg-fixed{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:radial-gradient(ellipse at 20% 20%,#0d1535 0%,#07080f 70%);}
+.nebula{position:absolute;border-radius:50%;filter:blur(80px);animation:nebDrift 14s ease-in-out infinite alternate;}
+.n1{width:600px;height:500px;background:rgba(255,106,0,0.07);top:-150px;left:-150px;}
+.n2{width:500px;height:400px;background:rgba(176,68,255,0.06);bottom:-100px;right:-100px;animation-delay:4s;}
+.n3{width:350px;height:350px;background:rgba(0,195,255,0.05);top:40%;right:20%;animation-delay:7s;}
+@keyframes nebDrift{0%{transform:scale(1)}100%{transform:scale(1.12) translate(15px,-15px)}}
+.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle ease-in-out infinite alternate;}
+@keyframes twinkle{0%{opacity:.1}100%{opacity:.9}}
+
+/* ── PAGES ── */
+.page{display:none;min-height:100vh;position:relative;z-index:10;}
+.page.active{display:flex;flex-direction:column;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SPLASH ── */
+#splash{align-items:center;justify-content:center;text-align:center;padding:20px;}
+.splash-logo{font-family:'Bebas Neue',sans-serif;font-size:6rem;letter-spacing:6px;line-height:.85;background:linear-gradient(135deg,var(--orange),var(--yellow),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 40px rgba(255,160,0,.6));animation:logoGlow 3s ease-in-out infinite alternate,logoIn .8s ease;}
+@keyframes logoGlow{0%{filter:drop-shadow(0 0 20px rgba(255,160,0,.4))}100%{filter:drop-shadow(0 0 60px rgba(255,160,0,.9))}}
+@keyframes logoIn{from{opacity:0;transform:scale(.8) translateY(-20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.splash-sub{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:6px;color:var(--blue);margin-top:6px;}
+.splash-tagline{color:var(--muted);font-size:.9rem;margin-top:8px;}
+.dragon-balls{display:flex;justify-content:center;gap:8px;margin:20px 0;}
+.db{width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffd700,#ff8c00 60%,#c85a00);box-shadow:0 0 10px rgba(255,160,0,.6);animation:dbBounce 2s ease-in-out infinite;}
+.db:nth-child(2){animation-delay:.15s}.db:nth-child(3){animation-delay:.3s}.db:nth-child(4){animation-delay:.45s}
+.db:nth-child(5){animation-delay:.6s}.db:nth-child(6){animation-delay:.75s}.db:nth-child(7){animation-delay:.9s}
+@keyframes dbBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px);box-shadow:0 8px 20px rgba(255,160,0,.85)}}
+
+/* ── NAV ── */
+.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,11,20,.95);border-top:1px solid var(--border);display:flex;z-index:100;backdrop-filter:blur(20px);padding-bottom:env(safe-area-inset-bottom);}
+.nav-btn{flex:1;padding:12px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:all .2s;border:none;background:none;color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+.nav-btn.active{color:var(--orange);}
+.nav-btn .nav-icon{font-size:1.3rem;}
+
+/* ── MAIN CONTENT WRAPPER ── */
+.content{flex:1;padding:16px 16px 80px;max-width:600px;width:100%;margin:0 auto;}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px;backdrop-filter:blur(16px);}
+.card-accent{border-top:3px solid var(--orange);}
+.section-label{font-family:'Bebas Neue',sans-serif;letter-spacing:3px;font-size:.78rem;color:var(--muted);margin-bottom:10px;}
+
+/* ── HOME PAGE ── */
+.home-hero{text-align:center;padding:24px 0 16px;}
+.home-logo{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:4px;background:linear-gradient(135deg,var(--orange),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.home-sub{font-family:'Bebas Neue',sans-serif;font-size:.85rem;letter-spacing:5px;color:var(--blue);}
+
+.stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.stat-mini{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 8px;text-align:center;backdrop-filter:blur(12px);}
+.stat-mini-val{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--yellow);}
+.stat-mini-label{font-size:.7rem;color:var(--muted);font-weight:600;letter-spacing:.5px;margin-top:2px;}
+
+/* Plan badge */
+.plan-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:2px;margin-bottom:14px;}
+.plan-free{background:rgba(106,106,154,.15);border:1px solid var(--border);color:var(--muted);}
+.plan-pro{background:rgba(255,208,0,.15);border:1px solid var(--yellow);color:var(--yellow);}
+.plan-legend{background:rgba(176,68,255,.15);border:1px solid var(--purple);color:var(--purple);}
+
+/* Quick play */
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.mode-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 14px;cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden;backdrop-filter:blur(12px);}
+.mode-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,106,0,.06),transparent);opacity:0;transition:opacity .2s;}
+.mode-card:hover::before{opacity:1;}
+.mode-card:hover{transform:translateY(-3px);border-color:var(--orange);}
+.mode-card.locked{opacity:.5;cursor:default;}
+.mode-card.locked:hover{transform:none;border-color:var(--border);}
+.mode-icon{font-size:2rem;margin-bottom:8px;}
+.mode-name{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;}
+.mode-desc{font-size:.75rem;color:var(--muted);margin-top:3px;}
+.lock-overlay{position:absolute;top:8px;right:8px;font-size:.8rem;}
+
+/* ── QUIZ PAGE ── */
+.quiz-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.back-btn{background:var(--card);border:1px solid var(--border);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;flex-shrink:0;transition:all .2s;}
+.back-btn:hover{border-color:var(--orange);}
+.progress-track{flex:1;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--yellow));border-radius:99px;transition:width .5s ease;}
+.q-num{font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--muted);white-space:nowrap;}
+.score-chip{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:4px 12px;font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--yellow);white-space:nowrap;}
+
+.timer-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.timer-bar-wrap{flex:1;height:7px;background:var(--border);border-radius:99px;overflow:hidden;}
+.timer-bar-fill{height:100%;border-radius:99px;transition:width 1s linear,background 1s;background:var(--green);}
+.timer-count{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;min-width:24px;text-align:right;}
+
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px 18px;margin-bottom:12px;position:relative;overflow:hidden;backdrop-filter:blur(14px);}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--orange),var(--yellow));}
+.q-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(255,106,0,.1);border:1px solid rgba(255,106,0,.25);border-radius:99px;padding:3px 12px;font-size:.72rem;font-weight:700;color:var(--orange);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}
+.q-text{font-size:1.06rem;font-weight:600;line-height:1.5;}
+
+.options-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+.opt{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:13px 15px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.96rem;font-weight:600;color:var(--text);text-align:left;display:flex;align-items:center;gap:12px;transition:all .18s;backdrop-filter:blur(12px);}
+.opt:hover:not(:disabled){border-color:var(--orange);transform:translateX(4px);background:rgba(255,106,0,.06);}
+.opt-letter{width:26px;height:26px;border-radius:7px;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.88rem;flex-shrink:0;transition:all .2s;}
+.opt.correct{border-color:var(--green);background:rgba(0,230,118,.09);color:var(--green);}
+.opt.correct .opt-letter{background:var(--green);color:#000;}
+.opt.wrong{border-color:var(--red);background:rgba(255,45,85,.09);color:var(--red);}
+.opt.wrong .opt-letter{background:var(--red);color:#fff;}
+.opt:disabled{cursor:default;transform:none !important;}
+
+.feedback{display:none;border-radius:12px;padding:12px 15px;font-size:.93rem;font-weight:700;align-items:center;gap:10px;margin-bottom:10px;}
+.feedback.show{display:flex;animation:fadeUp .3s ease;}
+.feedback.ok{background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.3);color:var(--green);}
+.feedback.no{background:rgba(255,45,85,.1);border:1px solid rgba(255,45,85,.3);color:var(--red);}
+
+/* ── RESULTS PAGE ── */
+.result-hero{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:28px 20px;text-align:center;margin-bottom:12px;position:relative;overflow:hidden;backdrop-filter:blur(16px);}
+.result-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top,rgba(255,106,0,.1) 0%,transparent 55%);}
+.result-rank{font-family:'Bebas Neue',sans-serif;font-size:.85rem;letter-spacing:4px;color:var(--orange);margin-bottom:5px;}
+.result-emoji{font-size:3.5rem;display:block;margin-bottom:8px;}
+.result-title{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:3px;background:linear-gradient(135deg,var(--orange),var(--yellow),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:5px;}
+.result-msg{color:var(--muted);font-size:.9rem;margin-bottom:20px;}
+.result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.r-stat{background:rgba(7,8,15,.7);border:1px solid var(--border);border-radius:12px;padding:12px 6px;text-align:center;}
+.r-stat-val{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;color:var(--yellow);}
+.r-stat-label{font-size:.68rem;color:var(--muted);margin-top:2px;font-weight:600;letter-spacing:.5px;}
+
+/* Score category */
+.score-cat-card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:12px;backdrop-filter:blur(14px);}
+.score-cat-title{padding:12px 18px;border-bottom:1px solid var(--border);font-family:'Bebas Neue',sans-serif;font-size:.85rem;letter-spacing:3px;color:var(--muted);}
+.score-cat-row{display:flex;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border);gap:12px;transition:all .2s;}
+.score-cat-row:last-child{border-bottom:none;}
+.score-cat-row.active-cat{background:rgba(255,208,0,.07);border-left:3px solid var(--yellow);}
+.score-range{font-family:'Bebas Neue',sans-serif;font-size:1rem;min-width:55px;color:var(--text);}
+.score-bar-wrap{flex:1;height:7px;background:var(--border);border-radius:99px;overflow:hidden;}
+.score-bar-fill{height:100%;border-radius:99px;}
+.score-cat-label{font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:2px;min-width:85px;text-align:right;}
+.score-cat-emoji{font-size:1.2rem;}
+
+/* ── SUBSCRIPTION PAGE ── */
+.sub-hero{text-align:center;padding:20px 0 10px;}
+.sub-title{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:3px;background:linear-gradient(135deg,var(--yellow),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sub-desc{color:var(--muted);font-size:.9rem;margin-top:6px;}
+
+.plan-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:12px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;backdrop-filter:blur(14px);}
+.plan-card:hover{transform:translateY(-2px);}
+.plan-card.popular{border-color:var(--yellow);}
+.popular-tag{position:absolute;top:0;right:0;background:var(--yellow);color:#000;font-family:'Bebas Neue',sans-serif;font-size:.75rem;letter-spacing:2px;padding:4px 14px;border-radius:0 20px 0 12px;}
+.plan-name{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:3px;margin-bottom:4px;}
+.plan-price{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;margin-bottom:4px;}
+.plan-period{font-size:.8rem;color:var(--muted);}
+.plan-features{margin-top:14px;display:flex;flex-direction:column;gap:7px;}
+.plan-feature{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;}
+.feature-check{color:var(--green);font-size:1rem;}
+.feature-x{color:var(--red);font-size:1rem;}
+
+.btn-subscribe{width:100%;padding:16px;border:none;border-radius:14px;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:3px;cursor:pointer;transition:all .2s;margin-top:8px;}
+.btn-sub-free{background:var(--border);color:var(--muted);}
+.btn-sub-pro{background:linear-gradient(135deg,var(--orange),var(--yellow));color:#000;box-shadow:0 4px 20px rgba(255,106,0,.3);}
+.btn-sub-pro:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,106,0,.5);}
+.btn-sub-legend{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;box-shadow:0 4px 20px rgba(176,68,255,.3);}
+.btn-sub-legend:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(176,68,255,.5);}
+
+/* ── PROFILE PAGE ── */
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--yellow));display:flex;align-items:center;justify-content:center;font-size:2.2rem;margin:0 auto 12px;box-shadow:0 0 30px rgba(255,160,0,.4);}
+.profile-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;text-align:center;}
+.profile-plan{text-align:center;margin-bottom:16px;}
+
+.achievement-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:0;}
+.achievement{background:rgba(7,8,15,.7);border:1px solid var(--border);border-radius:12px;padding:12px 6px;text-align:center;}
+.achievement.unlocked{border-color:var(--yellow);background:rgba(255,208,0,.06);}
+.achievement-icon{font-size:1.6rem;margin-bottom:4px;}
+.achievement-name{font-size:.65rem;color:var(--muted);font-weight:600;letter-spacing:.5px;}
+.achievement.unlocked .achievement-name{color:var(--yellow);}
+
+/* ── LEADERBOARD ── */
+.lb-card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:12px;backdrop-filter:blur(14px);}
+.lb-header{padding:14px 18px;border-bottom:1px solid var(--border);font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:3px;color:var(--muted);}
+.lb-row{display:flex;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border);gap:12px;transition:background .2s;}
+.lb-row:last-child{border-bottom:none;}
+.lb-row.you{background:rgba(255,106,0,.07);}
+.lb-pos{font-family:'Bebas Neue',sans-serif;font-size:1rem;width:26px;color:var(--muted);}
+.lb-pos.g{color:var(--yellow)}.lb-pos.s{color:#c0c0c0}.lb-pos.b{color:#cd7f32}
+.lb-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.lb-info{flex:1;}
+.lb-name{font-weight:700;font-size:.9rem;}
+.lb-games{font-size:.72rem;color:var(--muted);}
+.lb-score{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--orange);}
+.you-tag{background:var(--orange);color:#000;font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:99px;margin-left:6px;}
+
+/* ── BUTTONS ── */
+.btn{width:100%;padding:15px;border:none;border-radius:13px;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px;cursor:pointer;transition:all .2s;}
+.btn-primary{background:linear-gradient(135deg,var(--orange),var(--yellow));color:#000;box-shadow:0 4px 20px rgba(255,106,0,.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,106,0,.5);}
+.btn-secondary{background:var(--card);border:1px solid var(--border);color:var(--text);margin-top:8px;}
+.btn-secondary:hover{border-color:var(--orange);color:var(--orange);}
+
+/* ── INPUT ── */
+.input-wrap{margin-bottom:12px;}
+.input-wrap input{width:100%;background:rgba(14,15,28,.9);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:600;outline:none;transition:border-color .2s;}
+.input-wrap input:focus{border-color:var(--orange);}
+.input-wrap input::placeholder{color:var(--muted);font-weight:400;}
+
+/* ── VOICE ── */
+.voice-row{display:flex;align-items:center;justify-content:space-between;background:rgba(255,106,0,.06);border:1px solid rgba(255,106,0,.2);border-radius:12px;padding:12px 16px;margin-bottom:12px;}
+.voice-label{font-weight:700;font-size:.92rem;display:flex;align-items:center;gap:8px;}
+.voice-desc{font-size:.75rem;color:var(--muted);margin-top:2px;}
+.toggle{width:46px;height:25px;background:var(--border);border-radius:99px;position:relative;cursor:pointer;transition:background .3s;flex-shrink:0;border:none;}
+.toggle.on{background:var(--orange);}
+.toggle::after{content:'';position:absolute;width:19px;height:19px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .3s;box-shadow:0 2px 6px rgba(0,0,0,.3);}
+.toggle.on::after{transform:translateX(21px);}
+
+/* ── DIFF SELECTOR ── */
+.diff-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.diff-btn{background:rgba(14,15,28,.85);border:1px solid var(--border);border-radius:12px;padding:12px 6px;cursor:pointer;text-align:center;transition:all .2s;font-family:'Rajdhani',sans-serif;}
+.diff-btn:hover{transform:translateY(-2px);}
+.diff-btn.selected{box-shadow:0 0 0 2px currentColor;}
+.diff-btn.easy{color:var(--green)}.diff-btn.easy.selected{background:rgba(0,230,118,.1);border-color:var(--green)}
+.diff-btn.medium{color:var(--yellow)}.diff-btn.medium.selected{background:rgba(255,208,0,.1);border-color:var(--yellow)}
+.diff-btn.hard{color:var(--red)}.diff-btn.hard.selected{background:rgba(255,45,85,.1);border-color:var(--red)}
+.diff-icon{font-size:1.3rem;margin-bottom:3px;}
+.diff-name{font-size:.75rem;font-weight:700;letter-spacing:1px;}
+.diff-qs{font-size:.67rem;color:var(--muted);margin-top:2px;}
+
+/* cat pills */
+.cat-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.cat-scroll::-webkit-scrollbar{display:none;}
+.cat-pill{background:rgba(14,15,28,.85);border:1px solid var(--border);border-radius:99px;padding:7px 14px;white-space:nowrap;cursor:pointer;font-size:.78rem;font-weight:600;letter-spacing:.5px;transition:all .2s;flex-shrink:0;}
+.cat-pill.selected{background:rgba(255,106,0,.12);border-color:var(--orange);color:var(--orange);}
+
+/* share row */
+.share-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+
+/* install banner */
+.install-banner{background:linear-gradient(135deg,rgba(255,106,0,.15),rgba(255,208,0,.1));border:1px solid rgba(255,106,0,.3);border-radius:16px;padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+.install-icon{font-size:1.8rem;flex-shrink:0;}
+.install-text{flex:1;}
+.install-title{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--orange);}
+.install-desc{font-size:.75rem;color:var(--muted);margin-top:2px;}
+.install-btn{background:var(--orange);color:#000;border:none;border-radius:8px;padding:7px 14px;font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:1px;cursor:pointer;flex-shrink:0;}
+
+/* voice indicator */
+.voice-indicator{display:none;align-items:center;gap:8px;background:rgba(255,106,0,.08);border:1px solid rgba(255,106,0,.2);border-radius:10px;padding:7px 14px;margin-bottom:10px;font-size:.8rem;color:var(--orange);font-weight:600;}
+.voice-indicator.show{display:flex;}
+.voice-wave{display:flex;gap:3px;align-items:center;}
+.wave-bar{width:3px;border-radius:99px;background:var(--orange);animation:wave .8s ease-in-out infinite alternate;}
+.wave-bar:nth-child(1){height:8px;animation-delay:0s}.wave-bar:nth-child(2){height:14px;animation-delay:.15s}
+.wave-bar:nth-child(3){height:10px;animation-delay:.3s}.wave-bar:nth-child(4){height:16px;animation-delay:.1s}
+.wave-bar:nth-child(5){height:8px;animation-delay:.25s}
+@keyframes wave{0%{transform:scaleY(.5)}100%{transform:scaleY(1.2)}}
+
+/* daily limit */
+.limit-bar{background:rgba(14,15,28,.9);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;}
+.limit-info{flex:1;}
+.limit-label{font-size:.8rem;font-weight:700;margin-bottom:5px;}
+.limit-track{height:6px;background:var(--border);border-radius:99px;overflow:hidden;}
+.limit-fill{height:100%;border-radius:99px;background:var(--green);transition:width .5s;}
+.limit-count{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--orange);white-space:nowrap;}
+
+@media(max-width:380px){.splash-logo{font-size:4.5rem;}.home-logo{font-size:2.8rem;}}
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND -->
+<div class="bg-fixed">
+  <div class="nebula n1"></div>
+  <div class="nebula n2"></div>
+  <div class="nebula n3"></div>
+</div>
+
+<!-- SPLASH -->
+<div class="page active" id="splash">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;text-align:center;">
+    <div class="splash-logo">SAIYAN IQ</div>
+    <div class="splash-sub">Dragon Ball Legends Quiz</div>
+    <div class="splash-tagline">Test your DBL knowledge. Prove your power level.</div>
+    <div class="dragon-balls">
+      <div class="db"></div><div class="db"></div><div class="db"></div>
+      <div class="db"></div><div class="db"></div><div class="db"></div>
+      <div class="db"></div>
+    </div>
+    <div style="margin-top:10px;">
+      <div class="input-wrap"><input type="text" id="splashName" placeholder="⚡ Enter your Saiyan name..." maxlength="20"/></div>
+      <button class="btn btn-primary" onclick="enterApp()">⚡ ENTER THE ARENA</button>
+    </div>
+    <div style="margin-top:14px;font-size:.75rem;color:var(--muted);">100+ Questions · 3 Difficulty Levels · Voice Readout</div>
+  </div>
+</div>
+
+<!-- HOME PAGE -->
+<div class="page" id="home">
+  <div class="content">
+    <div class="home-hero">
+      <div class="home-logo">SAIYAN IQ</div>
+      <div class="home-sub">Dragon Ball Legends Quiz</div>
+    </div>
+
+    <div id="installBanner" class="install-banner" style="display:none;" onclick="installApp()">
+      <div class="install-icon">📲</div>
+      <div class="install-text">
+        <div class="install-title">INSTALL APP</div>
+        <div class="install-desc">Add to home screen for instant access</div>
+      </div>
+      <button class="install-btn">INSTALL</button>
+    </div>
+
+    <div class="stats-strip">
+      <div class="stat-mini"><div class="stat-mini-val" id="totalGames">0</div><div class="stat-mini-label">GAMES PLAYED</div></div>
+      <div class="stat-mini"><div class="stat-mini-val" id="bestScore">0</div><div class="stat-mini-label">BEST SCORE</div></div>
+      <div class="stat-mini"><div class="stat-mini-val" id="totalCorrect">0%</div><div class="stat-mini-label">ACCURACY</div></div>
+    </div>
+
+    <div id="dailyLimitBar" class="limit-bar">
+      <div class="limit-info">
+        <div class="limit-label">⚡ Daily Questions <span id="planLabel" style="color:var(--muted);font-size:.7rem;">(FREE PLAN)</span></div>
+        <div class="limit-track"><div class="limit-fill" id="limitFill" style="width:0%"></div></div>
+      </div>
+      <div class="limit-count"><span id="questionsUsed">0</span>/<span id="questionsMax">10</span></div>
+    </div>
+
+    <div class="section-label">QUICK PLAY</div>
+    <div class="mode-grid">
+      <div class="mode-card" onclick="goToQuiz('classic')">
+        <div class="mode-icon">⚡</div>
+        <div class="mode-name">CLASSIC</div>
+        <div class="mode-desc">10 random questions</div>
+      </div>
+      <div class="mode-card" onclick="goToQuiz('blitz')">
+        <div class="mode-icon">🔥</div>
+        <div class="mode-name">BLITZ</div>
+        <div class="mode-desc">5 sec timer — fast!</div>
+      </div>
+      <div class="mode-card" id="survivalCard" onclick="checkPremiumAndPlay('survival')">
+        <div class="lock-overlay" id="survivalLock">🔒</div>
+        <div class="mode-icon">💀</div>
+        <div class="mode-name">SURVIVAL</div>
+        <div class="mode-desc">1 wrong = game over</div>
+      </div>
+      <div class="mode-card" id="dailyCard" onclick="goToQuiz('daily')">
+        <div class="mode-icon">📅</div>
+        <div class="mode-name">DAILY</div>
+        <div class="mode-desc">Same for everyone today</div>
+      </div>
+    </div>
+
+    <div class="section-label">CHOOSE CATEGORY</div>
+    <div class="card" style="padding:14px;">
+      <div class="cat-scroll">
+        <div class="cat-pill selected" onclick="selectCat(this,'all')">⚡ All</div>
+        <div class="cat-pill" onclick="selectCat(this,'characters')">🥊 Characters</div>
+        <div class="cat-pill" onclick="selectCat(this,'story')">📖 Story</div>
+        <div class="cat-pill" onclick="selectCat(this,'abilities')">💥 Abilities</div>
+        <div class="cat-pill" onclick="selectCat(this,'legends')">🏆 Legends</div>
+        <div class="cat-pill" onclick="selectCat(this,'pvp')">⚔️ PvP</div>
+        <div class="cat-pill" onclick="selectCat(this,'forms')">💫 Forms</div>
+        <div class="cat-pill" onclick="selectCat(this,'villains')">👹 Villains</div>
+      </div>
+    </div>
+
+    <div class="section-label">DIFFICULTY</div>
+    <div class="diff-grid">
+      <div class="diff-btn easy selected" onclick="selectDiff(this,'easy')"><div class="diff-icon">🟢</div><div class="diff-name">KAIO-KEN</div><div class="diff-qs">Easy</div></div>
+      <div class="diff-btn medium" onclick="selectDiff(this,'medium')"><div class="diff-icon">🟡</div><div class="diff-name">SUPER SAIYAN</div><div class="diff-qs">Medium</div></div>
+      <div class="diff-btn hard" onclick="selectDiff(this,'hard')"><div class="diff-icon">🔴</div><div class="diff-name">ULTRA EGO</div><div class="diff-qs">Hard</div></div>
+    </div>
+
+    <div class="voice-row">
+      <div><div class="voice-label">🎙️ Voice Readout</div><div class="voice-desc">Questions read aloud automatically</div></div>
+      <button class="toggle" id="voiceToggle" onclick="toggleVoice()"></button>
+    </div>
+
+    <button class="btn btn-primary" onclick="startQuiz()">⚡ START QUIZ</button>
+  </div>
+</div>
+
+<!-- QUIZ PAGE -->
+<div class="page" id="quiz">
+  <div class="content">
+    <div class="quiz-top">
+      <div class="back-btn" onclick="exitQuiz()">←</div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:10%"></div></div>
+      <div class="q-num" id="qNum">1/10</div>
+      <div class="score-chip" id="scoreChip">⚡ 0</div>
+    </div>
+    <div class="voice-indicator" id="voiceIndicator">
+      <div class="voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
+      Reading question...
+    </div>
+    <div class="timer-row">
+      <div class="timer-bar-wrap"><div class="timer-bar-fill" id="timerBar" style="width:100%"></div></div>
+      <div class="timer-count" id="timerCount">15</div>
+    </div>
+    <div class="q-card">
+      <div class="q-tag" id="qCategory">⚡ LOADING</div>
+      <div class="q-text" id="qText">Loading...</div>
+    </div>
+    <div class="options-list" id="optionsList"></div>
+    <div class="feedback" id="feedback">
+      <span id="fbIcon"></span>&nbsp;<span id="fbText"></span>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS PAGE -->
+<div class="page" id="results">
+  <div class="content">
+    <div class="result-hero">
+      <div class="result-rank" id="resultRank">SAIYAN RANK</div>
+      <span class="result-emoji" id="resultEmoji">🏆</span>
+      <div class="result-title" id="resultTitle">LEGENDARY!</div>
+      <div class="result-msg" id="resultMsg"></div>
+      <div class="result-stats">
+        <div class="r-stat"><div class="r-stat-val" id="rScore">0</div><div class="r-stat-label">POWER LEVEL</div></div>
+        <div class="r-stat"><div class="r-stat-val" id="rCorrect">0/10</div><div class="r-stat-label">CORRECT</div></div>
+        <div class="r-stat"><div class="r-stat-val" id="rTime">0s</div><div class="r-stat-label">AVG TIME</div></div>
+      </div>
+    </div>
+
+    <div class="score-cat-card">
+      <div class="score-cat-title" id="scoreCatTitle">📊 YOUR SCORE CATEGORY</div>
+      <div class="score-cat-row" id="cat-excellent">
+        <div class="score-cat-emoji">🏆</div>
+        <div class="score-range">8 — 10</div>
+        <div class="score-bar-wrap"><div class="score-bar-fill" style="width:100%;background:var(--green)"></div></div>
+        <div class="score-cat-label" style="color:var(--green)">EXCELLENT</div>
+      </div>
+      <div class="score-cat-row" id="cat-good">
+        <div class="score-cat-emoji">🔥</div>
+        <div class="score-range">6 — 7</div>
+        <div class="score-bar-wrap"><div class="score-bar-fill" style="width:75%;background:var(--blue)"></div></div>
+        <div class="score-cat-label" style="color:var(--blue)">GOOD</div>
+      </div>
+      <div class="score-cat-row" id="cat-average">
+        <div class="score-cat-emoji">💪</div>
+        <div class="score-range">4 — 5</div>
+        <div class="score-bar-wrap"><div class="score-bar-fill" style="width:50%;background:var(--yellow)"></div></div>
+        <div class="score-cat-label" style="color:var(--yellow)">AVERAGE</div>
+      </div>
+      <div class="score-cat-row" id="cat-needwork">
+        <div class="score-cat-emoji">📚</div>
+        <div class="score-range">1 — 3</div>
+        <div class="score-bar-wrap"><div class="score-bar-fill" style="width:25%;background:var(--red)"></div></div>
+        <div class="score-cat-label" style="color:var(--red)">NEED WORK</div>
+      </div>
+    </div>
+
+    <div class="lb-card">
+      <div class="lb-header">🏆 HALL OF LEGENDS</div>
+      <div id="leaderboard"></div>
+    </div>
+
+    <div class="share-row">
+      <button class="btn btn-primary" onclick="restartQuiz()" style="font-size:1rem;padding:13px;">🔄 PLAY AGAIN</button>
+      <button class="btn btn-secondary" onclick="showPage('home')" style="margin-top:0;font-size:1rem;padding:13px;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;">🏠 HOME</button>
+    </div>
+    <button class="btn btn-secondary" onclick="showPage('subscribe')" style="background:rgba(255,208,0,.1);border-color:var(--yellow);color:var(--yellow);font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:.95rem;padding:12px;">⚡ UPGRADE FOR UNLIMITED PLAY</button>
+  </div>
+</div>
+
+<!-- LEADERBOARD PAGE -->
+<div class="page" id="leaderboard-page">
+  <div class="content">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:4px;margin-bottom:4px;">🏆 HALL OF LEGENDS</div>
+    <div style="color:var(--muted);font-size:.85rem;margin-bottom:16px;">Top warriors worldwide</div>
+    <div class="lb-card"><div id="globalLeaderboard"></div></div>
+  </div>
+</div>
+
+<!-- SUBSCRIBE PAGE -->
+<div class="page" id="subscribe">
+  <div class="content">
+    <div class="sub-hero">
+      <div class="sub-title">POWER UP!</div>
+      <div class="sub-desc">Unlock unlimited questions and exclusive features</div>
+    </div>
+
+    <!-- Free -->
+    <div class="plan-card">
+      <div class="plan-name" style="color:var(--muted);">⚪ FREE</div>
+      <div class="plan-price">$0<span class="plan-period">/forever</span></div>
+      <div class="plan-features">
+        <div class="plan-feature"><span class="feature-check">✓</span> 10 questions per day</div>
+        <div class="plan-feature"><span class="feature-check">✓</span> 3 difficulty levels</div>
+        <div class="plan-feature"><span class="feature-check">✓</span> Basic leaderboard</div>
+        <div class="plan-feature"><span class="feature-x">✗</span> Survival mode</div>
+        <div class="plan-feature"><span class="feature-x">✗</span> 100+ questions</div>
+        <div class="plan-feature"><span class="feature-x">✗</span> No ads</div>
+      </div>
+      <button class="btn-subscribe btn-sub-free" onclick="selectPlan('free')">CURRENT PLAN</button>
+    </div>
+
+    <!-- Super Saiyan -->
+    <div class="plan-card popular">
+      <div class="popular-tag">⭐ MOST POPULAR</div>
+      <div class="plan-name" style="color:var(--orange);">🔥 SUPER SAIYAN</div>
+      <div class="plan-price" style="color:var(--orange);">$2.99<span class="plan-period">/month</span></div>
+      <div class="plan-features">
+        <div class="plan-feature"><span class="feature-check">✓</span> Unlimited questions daily</div>
+        <div class="plan-feature"><span class="feature-check">✓</span> All 100+ questions</div>
+        <div class="plan-feature"><span class="feature-check">✓</span> All game modes</div>
+        <div class="plan-feature"><span class="feature-check">✓</span> No ads</div>
+        <div class="plan-feature"><span class="feature-check">✓</span> Priority leaderboard</div>
+        <div class="plan-feature"><span class="feature-x">✗</span> Early access content</div>
+      </div>
+      <button class="btn-subscribe btn-sub-pro" onclick="selectPlan('pro')">⚡ GO SUPER SAIYAN</button>
+    </div>
+
+    <!-- Legendary -->
+    <div class="plan-card" style="border-color:var(--purple);">
+      <div class="plan-name" style="color:var(--purple);">👑 LEGENDARY</div>
+      <div class="plan-price" style="color:var(--purple);">$4.99<span class="plan-period">/month</span></div>
+      <div class="plan-features">
+        <div class="plan-feature"><span class="feature-check">✓</span> Everything in Super Saiyan</div>
+        <div class="plan-feature"><span class="feature-check">✓</span> Early access to new questions</div>
+        <div class="plan-feature"><span class="feature-check">✓</span> Exclusive Legendary badge</div>
+        <div class="plan-feature"><span class="feature-check">✓</span> Part 3, 4, 5 early access</div>
+        <div class="plan-feature"><span class="feature-check">✓</span> Direct feedback to creator</div>
+        <div class="plan-feature"><span class="feature-check">✓</span> Ad-free forever</div>
+      </div>
+      <button class="btn-subscribe btn-sub-legend" onclick="selectPlan('legend')">👑 GO LEGENDARY</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE PAGE -->
+<div class="page" id="profile">
+  <div class="content">
+    <div class="card" style="text-align:center;margin-bottom:14px;">
+      <div class="profile-avatar" id="profileAvatar">⚡</div>
+      <div class="profile-name" id="profileName">SAIYAN</div>
+      <div class="profile-plan"><span class="plan-badge plan-free" id="profilePlanBadge">⚪ FREE PLAN</span></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;">
+        <div class="r-stat"><div class="r-stat-val" id="pGames">0</div><div class="r-stat-label">GAMES</div></div>
+        <div class="r-stat"><div class="r-stat-val" id="pBest">0</div><div class="r-stat-label">BEST</div></div>
+        <div class="r-stat"><div class="r-stat-val" id="pAcc">0%</div><div class="r-stat-label">ACCURACY</div></div>
+      </div>
+    </div>
+
+    <div class="section-label">🏅 ACHIEVEMENTS</div>
+    <div class="card" style="padding:14px;">
+      <div class="achievement-grid" id="achievementGrid"></div>
+    </div>
+
+    <button class="btn btn-primary" onclick="showPage('subscribe')" style="margin-top:4px;">⚡ UPGRADE PLAN</button>
+    <button class="btn btn-secondary" onclick="resetProfile()">🔄 RESET PROGRESS</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="nav" id="mainNav" style="display:none;">
+  <button class="nav-btn active" id="nav-home" onclick="showPage('home')"><span class="nav-icon">🏠</span>HOME</button>
+  <button class="nav-btn" id="nav-leaderboard-page" onclick="showPage('leaderboard-page')"><span class="nav-icon">🏆</span>RANKS</button>
+  <button class="nav-btn" id="nav-subscribe" onclick="showPage('subscribe')"><span class="nav-icon">⚡</span>UPGRADE</button>
+  <button class="nav-btn" id="nav-profile" onclick="showPage('profile')"><span class="nav-icon">👤</span>PROFILE</button>
+</nav>
+
+<script>
+// ══════════════════════════════════════════
+// 108 UNIQUE QUESTIONS
+// ══════════════════════════════════════════
+const ALL_QUESTIONS = [
+  // CHARACTERS (18)
+  {cat:'characters',q:"What is Goku's Saiyan birth name given on Planet Vegeta?",opts:["Kakarot","Bardock","Turles","Paragus"],ans:0},
+  {cat:'characters',q:"Who is the original protagonist created exclusively for Dragon Ball Legends story mode?",opts:["Goku","Vegeta","Shallot","Zahha"],ans:2},
+  {cat:'characters',q:"Which fusion technique uses Potara earrings combining Goku and Vegeta?",opts:["Gogeta","Gotenks","Vegito","Kefla"],ans:2},
+  {cat:'characters',q:"What species is Piccolo in Dragon Ball Legends?",opts:["Saiyan","Earthling","Namekian","Android"],ans:2},
+  {cat:'characters',q:"Who is Goku's deceased Saiyan biological father?",opts:["Nappa","Turles","Raditz","Bardock"],ans:3},
+  {cat:'characters',q:"Which Angel attendant serves Universe 7's God of Destruction Beerus?",opts:["Grand Priest","Merus","Whis","Vados"],ans:2},
+  {cat:'characters',q:"Kefla is the fusion of which two female Saiyans from Universe 6?",opts:["Caulifla and Kale","Pan and Bulla","Videl and Chi-Chi","Android 18 and Kale"],ans:0},
+  {cat:'characters',q:"What is the name of Vegeta's younger brother?",opts:["Turles","Raditz","Tarble","Nappa"],ans:2},
+  {cat:'characters',q:"Which Android was originally a human boy kidnapped by Dr. Gero?",opts:["Android 16","Android 19","Android 17","Android 8"],ans:2},
+  {cat:'characters',q:"What is the name of the Supreme Kai of Universe 7?",opts:["Old Kai","Shin","Kibito","Grand Kai"],ans:1},
+  {cat:'characters',q:"Who trained Goku after he arrived on Earth as a baby?",opts:["Master Roshi","Kami","Korin","Grandpa Gohan"],ans:3},
+  {cat:'characters',q:"What is Gohan's daughter's name in Dragon Ball GT?",opts:["Bulla","Marron","Pan","Chi-Chi Jr"],ans:2},
+  {cat:'characters',q:"Which character is Goku's main rival throughout all of Dragon Ball?",opts:["Frieza","Piccolo","Vegeta","Cell"],ans:2},
+  {cat:'characters',q:"Who created the androids that serve as antagonists in the Android Saga?",opts:["Bulma","Dr. Gero","Capsule Corp","Babidi"],ans:1},
+  {cat:'characters',q:"What is the name of Future Trunks's mother?",opts:["Chi-Chi","Videl","Bulma","Android 18"],ans:2},
+  {cat:'characters',q:"Which character is known as the Prince of all Saiyans?",opts:["Goku","Nappa","Raditz","Vegeta"],ans:3},
+  {cat:'characters',q:"What is Beerus's twin brother's name, who is God of Destruction of Universe 6?",opts:["Sidra","Quitela","Champa","Belmod"],ans:2},
+  {cat:'characters',q:"Who is Goku's first son in Dragon Ball Z?",opts:["Goten","Trunks","Gohan","Pan"],ans:2},
+
+  // STORY & LORE (18)
+  {cat:'story',q:"How many Dragon Balls are needed to summon Shenron?",opts:["4","5","6","7"],ans:3},
+  {cat:'story',q:"On which planet does the iconic Goku vs Frieza battle take place?",opts:["Earth","Planet Vegeta","Namek","Kanassa"],ans:2},
+  {cat:'story',q:"Which universe does Goku represent in the Tournament of Power?",opts:["Universe 6","Universe 9","Universe 7","Universe 11"],ans:2},
+  {cat:'story',q:"Who created the evil android Cell by combining DNA of many fighters?",opts:["Android 16","Frieza","Dr. Gero","Babidi"],ans:2},
+  {cat:'story',q:"Which warrior from Universe 11 is Goku's strongest rival in the Tournament of Power?",opts:["Toppo","Dyspo","Jiren","Ribrianne"],ans:2},
+  {cat:'story',q:"In DBL's original story, who is the true villain manipulating events behind the scenes?",opts:["Frieza","Fu","Zahha","Hearts"],ans:2},
+  {cat:'story',q:"What technique does Gohan unlock with Elder Kai's help without transformation?",opts:["Super Saiyan 3","Mystic/Ultimate form","Super Saiyan God","Kaioken x20"],ans:1},
+  {cat:'story',q:"How long does one day in the Hyperbolic Time Chamber equal in the outside world?",opts:["1 hour","12 hours","1 day","1 year"],ans:2},
+  {cat:'story',q:"What wish did Frieza make when he finally gathered the Dragon Balls?",opts:["Immortality","To become taller","Unlimited power","Resurrection"],ans:1},
+  {cat:'story',q:"Which Namekian Dragon can grant three wishes instead of one?",opts:["Shenron","Porunga","Super Shenron","Black Smoke Shenron"],ans:1},
+  {cat:'story',q:"What is the name of the evil wizard who revives Majin Buu?",opts:["Garlic Jr","Babidi","Spopovich","Dabura"],ans:1},
+  {cat:'story',q:"Which villain is known as 'Demon King' and is Goku's earliest major enemy?",opts:["Raditz","King Piccolo","Nappa","Turles"],ans:1},
+  {cat:'story',q:"What is the full name of the organization that Frieza commands?",opts:["Planet Trade Organization","Frieza Force","Galactic Empire","Universal Corp"],ans:0},
+  {cat:'story',q:"Which planet's Dragon Balls grant any wish without limit?",opts:["Earth","Namek","Planet Vegeta","New Namek"],ans:1},
+  {cat:'story',q:"What is Gohan's human wife's name in Dragon Ball Z?",opts:["Chi-Chi","Bulma","Videl","Android 18"],ans:2},
+  {cat:'story',q:"In DBL lore, what is Shallot's unique ability that sets him apart from other Saiyans?",opts:["Unlimited ki","Can copy techniques from befriended allies","Use Ultra Instinct naturally","Fuse with anyone"],ans:1},
+  {cat:'story',q:"Which galactic criminal was once imprisoned by the Galactic Patrol and appears in Dragon Ball Super?",opts:["Moro","Granolah","Gas","Heeter"],ans:0},
+  {cat:'story',q:"In DBL, which mysterious blonde character betrays Shallot early in the story?",opts:["Fu","Hearts","Zahha","Giblet"],ans:2},
+
+  // ABILITIES (18)
+  {cat:'abilities',q:"What is Goku's signature blue energy wave attack called?",opts:["Galick Gun","Final Flash","Kamehameha","Spirit Bomb"],ans:2},
+  {cat:'abilities',q:"What is Vegeta's signature purple energy blast fired with both arms?",opts:["Kamehameha","Galick Gun","Final Flash","Big Bang Attack"],ans:1},
+  {cat:'abilities',q:"Which technique multiplies power at the cost of strain on the body?",opts:["Ultra Instinct","Spirit Control","Kaio-Ken","God Ki"],ans:2},
+  {cat:'abilities',q:"What color is DBL's Rising Rush when all 4 Dragon Balls are collected?",opts:["Yellow","Blue","Red","Purple"],ans:2},
+  {cat:'abilities',q:"What large golden sphere does Goku create by borrowing energy from all living beings?",opts:["Kamehameha","Galick Gun","Spirit Bomb","Final Kamehameha"],ans:2},
+  {cat:'abilities',q:"Which Piccolo technique involves a beam that rotates like a drill on impact?",opts:["Masenko","Scatter Shot","Special Beam Cannon","Light Grenade"],ans:2},
+  {cat:'abilities',q:"What is Gohan's yellow energy wave move learned from Piccolo?",opts:["Kamehameha","Masenko","Special Beam Cannon","Destructo Disc"],ans:1},
+  {cat:'abilities',q:"In DBL, what does a character's Z Ability passively provide to the team?",opts:["Heals HP","Stat buffs to teammates sharing the same tag","Reduces enemy ki","Triggers free Rising Rush"],ans:1},
+  {cat:'abilities',q:"What is the God of Destruction's erasure technique that destroys anything?",opts:["Ultra Instinct","Final Judgment","Hakai","Divine Punishment"],ans:2},
+  {cat:'abilities',q:"In DBL, what does Cover Rescue on a character's card mean?",opts:["Heals entire team","Triggers when a teammate takes a hit","Blocks 100% damage","Doubles speed"],ans:1},
+  {cat:'abilities',q:"What energy technique does Krillin throw that can be steered mid-flight?",opts:["Kamehameha","Destructo Disc","Solar Flare","Scatter Bullet"],ans:1},
+  {cat:'abilities',q:"Which technique allows a fighter to dodge attacks without conscious thought?",opts:["Kaio-Ken","Ultra Instinct","God Ki","Ki Sense"],ans:1},
+  {cat:'abilities',q:"What does Instant Transmission allow Goku to do in battle?",opts:["Fly faster","Teleport to any Ki source instantly","Become invisible","Stop time briefly"],ans:1},
+  {cat:'abilities',q:"What is Vegeta's most powerful single energy blast called in DBL?",opts:["Galick Gun","Final Flash","Big Bang Attack","Atomic Blast"],ans:1},
+  {cat:'abilities',q:"In DBL PvP, what builds up to trigger a special clash between two players?",opts:["Ki Gauge","Dragon Ball Gauge","Rising Rush Gauge","Zenkai Meter"],ans:1},
+  {cat:'abilities',q:"What is the name of Frieza's trademark energy technique shaped like a disc?",opts:["Death Ball","Supernova","Kienzan","Death Saucer"],ans:3},
+  {cat:'abilities',q:"Which ability in DBL allows a character to heal when switching out mid-battle?",opts:["Cover Change","Switch Recovery","Substitution Heal","Ki Restore"],ans:1},
+  {cat:'abilities',q:"What does the term 'Vanish' refer to in DBL combat?",opts:["Becoming permanently invisible","A dodge step avoiding enemy attacks","Teleporting to enemy","Hiding from view"],ans:1},
+
+  // LEGENDS LIMITED (18)
+  {cat:'legends',q:"What is the maximum Limit Break star level for any Sparking character in DBL?",opts:["★5","★6","★7","★9"],ans:2},
+  {cat:'legends',q:"Which in-game currency is primarily used to pull characters in DBL?",opts:["Zeni","Chrono Crystals","Dragon Stones","Z Power"],ans:1},
+  {cat:'legends',q:"Which rarity tier is ranked ABOVE Sparking in Dragon Ball Legends?",opts:["Legends Limited","Extreme","Ultra","Supreme"],ans:2},
+  {cat:'legends',q:"Before Zenkai Awakening, what star level must a Sparking character first reach?",opts:["★3","★5","★6","★7"],ans:3},
+  {cat:'legends',q:"How many total Zenkai Awakening rank levels can an eligible character reach?",opts:["3","5","7","10"],ans:2},
+  {cat:'legends',q:"What special resource separate from Chrono Crystals is needed for Zenkai Awakening?",opts:["Zeni","Z Power","Awakening Z Power","Zenkai Souls"],ans:2},
+  {cat:'legends',q:"Which annual DBL event features new Legends Limited characters on special banners?",opts:["Legends Festival","Zenkai Season","Anniversary Summon","Power Surge Event"],ans:0},
+  {cat:'legends',q:"Approximately what is the Sparking pull rate on standard DBL banners?",opts:["3%","5%","10%","15%"],ans:2},
+  {cat:'legends',q:"What is a Step-Up banner in Dragon Ball Legends?",opts:["A multi-step banner with better rewards per step","A banner only giving Sparking pulls","A free daily banner","A banner requiring boss clears"],ans:0},
+  {cat:'legends',q:"What does the CC abbreviation stand for in the DBL community?",opts:["Crystal Currency","Combat Class","Chrono Crystals","Character Count"],ans:2},
+  {cat:'legends',q:"What happens to a Legends Limited banner after its initial run ends?",opts:["Gone forever","Returns only during Legends Festival","Moves to regular pool","Moves to discount banner"],ans:1},
+  {cat:'legends',q:"In DBL, how many Chrono Crystals does a single pull typically cost?",opts:["50","100","150","200"],ans:2},
+  {cat:'legends',q:"What is the guaranteed pull mechanic where you're assured a Sparking after set pulls?",opts:["Pity System","Step Up Bonus","Multi Spark","Lucky Draw"],ans:0},
+  {cat:'legends',q:"What is the name of the challenge event that helps players obtain a specific character?",opts:["Legends Road","Rising Battle","Space-Time Rush","Special Event"],ans:0},
+  {cat:'legends',q:"In DBL, what does Multi Z Power on a banner mean?",opts:["You get multiple characters at once","Z Power for multiple characters simultaneously","Double Chrono Crystals","Unlock a special ability"],ans:1},
+  {cat:'legends',q:"What special cosmetic reward do you receive at Zenkai Awakening Rank 3?",opts:["New outfit","New special move","Card Sleeves","New title"],ans:2},
+  {cat:'legends',q:"Which Ultra character type has a unique gold card border in Dragon Ball Legends?",opts:["Sparking","Legends Limited","Ultra","Extreme"],ans:2},
+  {cat:'legends',q:"What is the name of free summon tickets distributed during special DBL events?",opts:["Chrono Tickets","CC Vouchers","Summon Tickets","Z Tickets"],ans:2},
+
+  // PvP & META (18)
+  {cat:'pvp',q:"What is the name of the main real-time ranked PvP mode in Dragon Ball Legends?",opts:["Legends League","PvP Arena","Space-Time Duel","Battle Road"],ans:2},
+  {cat:'pvp',q:"In DBL PvP, which element beats RED type characters?",opts:["Blue","Yellow","Green","Purple"],ans:2},
+  {cat:'pvp',q:"What is the maximum number of characters in a standard DBL PvP party?",opts:["3","4","5","6"],ans:0},
+  {cat:'pvp',q:"What happens when both players activate Rising Rush at the exact same moment?",opts:["Both cancel with no damage","A Rush Clash cutscene triggers","Higher power wins","Both lose half health"],ans:1},
+  {cat:'pvp',q:"What does F2P mean in DBL team-building strategy discussions?",opts:["Fight to Play","Free to Play","Full Team Power","First to Perform"],ans:1},
+  {cat:'pvp',q:"What does Zenkai primarily accomplish for older Sparking characters in PvP meta?",opts:["Gives them new arts moves","Significantly boosts power to stay competitive","Changes element color","Resets star count"],ans:1},
+  {cat:'pvp',q:"Which in-game shop allows players to exchange PvP medals for exclusive rewards?",opts:["Zeni Shop","Legends Shop","PvP Exchange Shop","Chrono Store"],ans:2},
+  {cat:'pvp',q:"What does Son Family refer to as a team Tag in Dragon Ball Legends?",opts:["All Earthling characters","Goku and his direct family members","All Saiyan characters","Only Gohan and Goten"],ans:1},
+  {cat:'pvp',q:"In DBL ranked battles, what rank sits just below the top Legend rank?",opts:["Ultra","Master","Supreme","Extreme"],ans:0},
+  {cat:'pvp',q:"What does the term meta mean in the DBL competitive community?",opts:["A secret game mode","Strongest characters and strategies currently dominant","A type of Dragon Ball","A Zenkai ability"],ans:1},
+  {cat:'pvp',q:"Which Tag in DBL groups Goku Black and Future Zamasu together?",opts:["Potara","Future","Rival Universe","Time Travelers"],ans:1},
+  {cat:'pvp',q:"What does the Pride Troopers Tag cover in DBL?",opts:["All Universe 7 fighters","Toppo, Jiren and Dyspo from Universe 11","All God of Destruction fighters","Universe 6 fighters"],ans:1},
+  {cat:'pvp',q:"What Tag do Android 17 and Android 18 share in DBL?",opts:["Earthling","Future","Android/Cell Saga","Legendary Finish"],ans:2},
+  {cat:'pvp',q:"Which Tag covers Universe 6 characters like Hit, Cabba and Caulifla?",opts:["Rival Universe","Universe 6","God Ki","Super Warrior"],ans:1},
+  {cat:'pvp',q:"What is the Fusion Warrior Tag shared by Vegito, Kefla and Gogeta?",opts:["God Ki","Potara","Fusion Warrior","Ultra"],ans:2},
+  {cat:'pvp',q:"Which Tag benefits Beerus, Whis and other divine characters in DBL?",opts:["Deity","God Ki","Universe 7","Divine Warriors"],ans:1},
+  {cat:'pvp',q:"What does Blast armor mean for a character's attack in DBL?",opts:["The attack cannot be cancelled by enemy blasts","The attack deals double damage","The attack heals the user","The attack bypasses all defense"],ans:0},
+  {cat:'pvp',q:"In DBL, what element has an advantage over BLUE type characters?",opts:["Red","Green","Yellow","Purple"],ans:0},
+
+  // FORMS & TRANSFORMATIONS (18)
+  {cat:'forms',q:"What is Goku's incomplete Ultra Instinct form with silver hair called?",opts:["Ultra Instinct Sign","Ultra Instinct Omen","Mastered Ultra Instinct","Silver Surge"],ans:0},
+  {cat:'forms',q:"Which transformation requires a pure heart and Super Saiyan God first?",opts:["Super Saiyan Blue","Super Saiyan 4","Legendary Super Saiyan","Super Saiyan Rage"],ans:0},
+  {cat:'forms',q:"What color do a Super Saiyan's eyes turn in their first transformation?",opts:["Red","Blue","Teal/Green","Silver"],ans:2},
+  {cat:'forms',q:"Which Vegeta exclusive form does NOT require God Ki to activate?",opts:["Super Saiyan Blue","Super Saiyan God","Super Saiyan Blue Evolution","Ultra Ego"],ans:2},
+  {cat:'forms',q:"What transformation does Future Trunks achieve using rage in Dragon Ball Super?",opts:["Super Saiyan 3","Super Saiyan God","Super Saiyan Rage","Ultra Instinct"],ans:2},
+  {cat:'forms',q:"What is Broly's Saiyan rage transformation in DBS: Broly film called?",opts:["Legendary Super Saiyan","Wrathful form","Super Saiyan C-type","Full Power Berserker"],ans:1},
+  {cat:'forms',q:"Which transformation does Gohan achieve in Dragon Ball Super: Super Hero surpassing Ultimate form?",opts:["Super Saiyan 3","Super Saiyan God","Gohan Beast","Mystic Ascended"],ans:2},
+  {cat:'forms',q:"What color aura does Super Saiyan God emit?",opts:["Gold","Blue","Red","White"],ans:2},
+  {cat:'forms',q:"In DBL, which villain has a unique Godslayer form?",opts:["Frieza","Moro","Hearts","Zamasu"],ans:2},
+  {cat:'forms',q:"What is the name of Frieza's 100% maximum power form?",opts:["Final Form","True Form","Full Power Form","Mecha Frieza"],ans:2},
+  {cat:'forms',q:"How many forms does Frieza have in total in Dragon Ball Z?",opts:["2","3","4","5"],ans:2},
+  {cat:'forms',q:"What is the name of Vegeta's new form introduced in the Granolah arc?",opts:["Super Saiyan Blue Evolution","Ultra Ego","God of Destruction Mode","Perfected Blue"],ans:1},
+  {cat:'forms',q:"In DBL, which Full Power form makes a character grow massively in size?",opts:["Majin Buu","Kid Buu","Full Power Boujack","Full Power Frieza"],ans:0},
+  {cat:'forms',q:"What triggers a Saiyan's Great Ape transformation in Dragon Ball?",opts:["Reaching full power","Looking at a full moon","Entering rage","Drinking Saiyan serum"],ans:1},
+  {cat:'forms',q:"What is the difference between Super Saiyan 2 and Super Saiyan 1 visually?",opts:["Different hair color","Electricity sparking around the body","Larger muscle mass","Blue eyes"],ans:1},
+  {cat:'forms',q:"Which transformation has Goku's hair turn completely white with silver eyes?",opts:["Ultra Instinct Sign","Mastered Ultra Instinct","Super Saiyan White","Divine Ultra"],ans:1},
+  {cat:'forms',q:"What form does Goku use that multiplies his base power by a factor shown as x4, x10, x20?",opts:["Ultra Instinct","Super Saiyan God","Kaio-Ken","Spirit Bomb"],ans:2},
+  {cat:'forms',q:"In DBL, what is the visual difference of an Ultra character's special attack compared to Sparking?",opts:["It's faster","It has a unique cutscene animation","It deals more hits","It freezes time"],ans:1},
+];
+
+// ══════════════════════════════════════════
+// APP STATE
+// ══════════════════════════════════════════
+let appState = {
+  playerName: 'Saiyan',
+  plan: 'free', // free, pro, legend
+  totalGames: 0,
+  bestScore: 0,
+  totalAnswered: 0,
+  totalCorrectAll: 0,
+  questionsUsedToday: 0,
+  lastPlayDate: '',
+  achievements: [],
+};
+
+const PLAN_LIMITS = { free: 10, pro: 999, legend: 999 };
+const FAKE_LEADERBOARD = [
+  {name:'UIGokuMaster', score:14800, games:42, avatar:'👑'},
+  {name:'VegitoSSB',    score:12200, games:35, avatar:'⚡'},
+  {name:'BrolyLegend',  score:10500, games:28, avatar:'🔥'},
+  {name:'ShallotFan99', score:9100,  games:22, avatar:'💪'},
+  {name:'GogetaBlue',   score:7800,  games:18, avatar:'🌟'},
+];
+
+const ACHIEVEMENTS_DEF = [
+  {id:'first_game',  icon:'🎮', name:'FIRST BATTLE',   desc:'Play your first quiz'},
+  {id:'perfect',     icon:'💯', name:'PERFECTION',      desc:'Get 10/10 correct'},
+  {id:'ten_games',   icon:'🔥', name:'VETERAN',         desc:'Play 10 games'},
+  {id:'speed_demon', icon:'⚡', name:'SPEED DEMON',     desc:'Answer in under 3s'},
+  {id:'fifty_games', icon:'👑', name:'LEGENDARY',       desc:'Play 50 games'},
+  {id:'subscriber',  icon:'⭐', name:'SUPER SAIYAN',    desc:'Upgrade your plan'},
+];
+
+// Game state
+let gameMode = 'classic';
+let difficulty = 'easy';
+let category = 'all';
+let voiceEnabled = false;
+let questions = [], currentQ = 0, score = 0, correctCount = 0;
+let timer = null, timeLeft = 15, timeUsed = 0;
+let timerLimit = 15;
+let survivalMode = false;
+let deferredInstallPrompt = null;
+
+// ══════════════════════════════════════════
+// STORAGE
+// ══════════════════════════════════════════
+function saveState() { localStorage.setItem('saiyaniq_state', JSON.stringify(appState)); }
+function loadState() {
+  const s = localStorage.getItem('saiyaniq_state');
+  if (s) appState = {...appState, ...JSON.parse(s)};
+  // Reset daily questions if new day
+  const today = new Date().toDateString();
+  if (appState.lastPlayDate !== today) { appState.questionsUsedToday = 0; appState.lastPlayDate = today; saveState(); }
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  // Update nav
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const navBtn = document.getElementById('nav-' + id);
+  if (navBtn) navBtn.classList.add('active');
+  // Page specific updates
+  if (id === 'home') updateHome();
+  if (id === 'profile') updateProfile();
+  if (id === 'leaderboard-page') updateGlobalLeaderboard();
+  window.scrollTo(0, 0);
+}
+
+function enterApp() {
+  const name = document.getElementById('splashName').value.trim();
+  if (name) { appState.playerName = name; saveState(); }
+  document.getElementById('mainNav').style.display = 'flex';
+  showPage('home');
+}
+
+// ══════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════
+function updateHome() {
+  document.getElementById('totalGames').textContent = appState.totalGames;
+  document.getElementById('bestScore').textContent = appState.bestScore.toLocaleString();
+  const acc = appState.totalAnswered > 0 ? Math.round((appState.totalCorrectAll / appState.totalAnswered) * 100) : 0;
+  document.getElementById('totalCorrect').textContent = acc + '%';
+
+  const max = PLAN_LIMITS[appState.plan];
+  const used = appState.questionsUsedToday;
+  document.getElementById('questionsUsed').textContent = used;
+  document.getElementById('questionsMax').textContent = appState.plan === 'free' ? max : '∞';
+  const pct = appState.plan === 'free' ? Math.min((used / max) * 100, 100) : 100;
+  document.getElementById('limitFill').style.width = pct + '%';
+  document.getElementById('limitFill').style.background = pct >= 100 ? 'var(--red)' : pct > 60 ? 'var(--yellow)' : 'var(--green)';
+  document.getElementById('planLabel').textContent = appState.plan === 'free' ? '(FREE PLAN)' : appState.plan === 'pro' ? '(SUPER SAIYAN)' : '(LEGENDARY)';
+
+  // Survival lock
+  const locked = appState.plan === 'free';
+  document.getElementById('survivalCard').classList.toggle('locked', locked);
+  document.getElementById('survivalLock').style.display = locked ? 'block' : 'none';
+}
+
+function selectCat(el, val) { document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('selected')); el.classList.add('selected'); category = val; }
+function selectDiff(el, val) { document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected')); el.classList.add('selected'); difficulty = val; }
+function toggleVoice() { voiceEnabled = !voiceEnabled; document.getElementById('voiceToggle').classList.toggle('on', voiceEnabled); if (!voiceEnabled) { window.speechSynthesis && window.speechSynthesis.cancel(); } }
+
+function goToQuiz(mode) { gameMode = mode; startQuiz(); }
+function checkPremiumAndPlay(mode) { if (appState.plan === 'free') { showPage('subscribe'); } else { goToQuiz(mode); } }
+
+// ══════════════════════════════════════════
+// QUIZ ENGINE
+// ══════════════════════════════════════════
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+function startQuiz() {
+  // Check daily limit
+  if (appState.plan === 'free' && appState.questionsUsedToday >= PLAN_LIMITS.free) {
+    showPage('subscribe'); return;
+  }
+  survivalMode = gameMode === 'survival';
+  timerLimit = gameMode === 'blitz' ? 5 : 15;
+
+  let pool = category === 'all' ? ALL_QUESTIONS : ALL_QUESTIONS.filter(q => q.cat === category);
+
+  if (gameMode === 'daily') {
+    // Same seed every day
+    const seed = new Date().toDateString().split('').reduce((a,c) => a + c.charCodeAt(0), 0);
+    pool = [...pool].sort((a, b) => {
+      const ha = (seed * 2654435761 + pool.indexOf(a)) >>> 0;
+      const hb = (seed * 2654435761 + pool.indexOf(b)) >>> 0;
+      return ha - hb;
+    });
+  } else {
+    pool = shuffle(pool);
+  }
+
+  const count = difficulty === 'easy' ? 8 : difficulty === 'medium' ? 10 : 12;
+  questions = pool.slice(0, Math.min(count, pool.length));
+  currentQ = 0; score = 0; correctCount = 0; timeUsed = 0;
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  showPage('quiz');
+  document.getElementById('mainNav').style.display = 'none';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ], total = questions.length;
+  document.getElementById('qNum').textContent = `${currentQ + 1}/${total}`;
+  document.getElementById('progressFill').style.width = `${((currentQ + 1) / total) * 100}%`;
+  document.getElementById('scoreChip').textContent = `⚡ ${score}`;
+  const icons = {characters:'🥊',story:'📖',abilities:'💥',legends:'🏆',pvp:'⚔️',forms:'💫',villains:'👹'};
+  document.getElementById('qCategory').textContent = `${icons[q.cat]||'⚡'} ${q.cat.toUpperCase()}`;
+  document.getElementById('qText').textContent = q.q;
+  const labels = ['A','B','C','D'];
+  const list = document.getElementById('optionsList');
+  list.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = `<span class="opt-letter">${labels[i]}</span>${opt}`;
+    btn.onclick = () => selectAnswer(i, btn);
+    list.appendChild(btn);
+  });
+  document.getElementById('feedback').className = 'feedback';
+  if (voiceEnabled) { speakQ(q); setTimeout(startTimer, 500); } else { startTimer(); }
+}
+
+function startTimer() {
+  clearInterval(timer); timeLeft = timerLimit; updateTimer();
+  timer = setInterval(() => {
+    timeLeft--; updateTimer();
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      appState.questionsUsedToday++; timeUsed += timerLimit; saveState();
+      window.speechSynthesis && window.speechSynthesis.cancel();
+      document.getElementById('voiceIndicator').classList.remove('show');
+      showFeedback(false, `⏰ Time's up! Correct: ${questions[currentQ].opts[questions[currentQ].ans]}`);
+      disableOpts();
+      if (survivalMode) { setTimeout(showResults, 1500); } else { setTimeout(nextQ, 2000); }
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const pct = (timeLeft / timerLimit) * 100;
+  const fill = document.getElementById('timerBar');
+  fill.style.width = pct + '%';
+  fill.style.background = timeLeft > (timerLimit * 0.5) ? 'var(--green)' : timeLeft > (timerLimit * 0.25) ? 'var(--yellow)' : 'var(--red)';
+  const cnt = document.getElementById('timerCount');
+  cnt.textContent = timeLeft;
+  cnt.style.color = timeLeft <= (timerLimit * 0.25) ? 'var(--red)' : 'var(--text)';
+}
+
+function selectAnswer(idx, btn) {
+  clearInterval(timer);
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  document.getElementById('voiceIndicator').classList.remove('show');
+  const q = questions[currentQ];
+  const elapsed = timerLimit - timeLeft;
+  timeUsed += elapsed;
+  appState.questionsUsedToday++;
+  disableOpts();
+  document.querySelectorAll('.opt')[q.ans].classList.add('correct');
+  if (idx === q.ans) {
+    btn.classList.add('correct');
+    const bonus = Math.floor(timeLeft * 20);
+    const mult = difficulty === 'easy' ? 1 : difficulty === 'medium' ? 1.5 : 2;
+    const gained = Math.floor((200 + bonus) * mult);
+    score += gained; correctCount++;
+    appState.totalCorrectAll++;
+    document.getElementById('scoreChip').textContent = `⚡ ${score}`;
+    showFeedback(true, `+${gained} Power Level!`);
+    voiceEnabled && speak('Correct! Well done!');
+    // Speed demon achievement
+    if (elapsed <= 3) unlockAchievement('speed_demon');
+  } else {
+    btn.classList.add('wrong');
+    showFeedback(false, `Wrong! Correct: ${q.opts[q.ans]}`);
+    voiceEnabled && speak(`Wrong. The correct answer was ${q.opts[q.ans]}`);
+    if (survivalMode) { setTimeout(showResults, 1800); saveState(); return; }
+  }
+  appState.totalAnswered++;
+  saveState();
+  setTimeout(nextQ, 1800);
+}
+
+function disableOpts() { document.querySelectorAll('.opt').forEach(b => b.disabled = true); }
+function showFeedback(ok, msg) {
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show ' + (ok ? 'ok' : 'no');
+  document.getElementById('fbIcon').textContent = ok ? '🔥' : '💔';
+  document.getElementById('fbText').textContent = msg;
+}
+function nextQ() { currentQ++; currentQ >= questions.length ? showResults() : renderQuestion(); }
+
+function exitQuiz() {
+  clearInterval(timer);
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  document.getElementById('mainNav').style.display = 'flex';
+  showPage('home');
+}
+
+// ══════════════════════════════════════════
+// RESULTS
+// ══════════════════════════════════════════
+function showResults() {
+  clearInterval(timer);
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  document.getElementById('mainNav').style.display = 'flex';
+
+  // Update stats
+  appState.totalGames++;
+  if (score > appState.bestScore) appState.bestScore = score;
+  saveState();
+
+  // Achievements
+  if (appState.totalGames === 1) unlockAchievement('first_game');
+  if (appState.totalGames >= 10) unlockAchievement('ten_games');
+  if (appState.totalGames >= 50) unlockAchievement('fifty_games');
+  if (correctCount === questions.length) unlockAchievement('perfect');
+
+  const pct = Math.round((correctCount / questions.length) * 100);
+  const avg = questions.length > 0 ? Math.round(timeUsed / questions.length) : 0;
+  let rank, emoji, title, msg;
+  if (pct === 100)    { rank='🌟 ULTRA INSTINCT MASTERED'; emoji='👑'; title='LEGENDARY!';    msg=`${appState.playerName}, you are the ultimate DBL master!`; }
+  else if (pct >= 80) { rank='⚡ SUPER SAIYAN BLUE RANK';  emoji='🔥'; title='INCREDIBLE!';   msg=`${appState.playerName}, your power level is OVER 9000!`; }
+  else if (pct >= 60) { rank='💪 SUPER SAIYAN RANK';       emoji='😤'; title='STRONG!';       msg=`Great work, ${appState.playerName}! Go further beyond!`; }
+  else if (pct >= 40) { rank='🌱 WARRIOR RANK';            emoji='😅'; title='KEEP TRAINING!'; msg=`${appState.playerName}, even Krillin never gave up!`; }
+  else                { rank='🐣 EARTHLING RANK';           emoji='😬'; title='TRY AGAIN!';    msg=`Don't worry ${appState.playerName}, Goku started from zero too!`; }
+
+  document.getElementById('resultRank').textContent = rank;
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultMsg').textContent = msg;
+  document.getElementById('rScore').textContent = score.toLocaleString();
+  document.getElementById('rCorrect').textContent = `${correctCount}/${questions.length}`;
+  document.getElementById('rTime').textContent = avg + 's';
+
+  // Score category highlight
+  const s10 = Math.round((correctCount / questions.length) * 10);
+  const cats = [{id:'cat-excellent',min:8,max:10},{id:'cat-good',min:6,max:7},{id:'cat-average',min:4,max:5},{id:'cat-needwork',min:1,max:3}];
+  cats.forEach(c => document.getElementById(c.id).classList.remove('active-cat'));
+  const active = cats.find(c => s10 >= c.min && s10 <= c.max) || cats[cats.length - 1];
+  document.getElementById(active.id).classList.add('active-cat');
+  document.getElementById('scoreCatTitle').textContent = `📊 YOUR SCORE: ${s10} / 10`;
+
+  if (voiceEnabled) speak(`Game over! ${appState.playerName}, you scored ${score} Power Level with ${correctCount} correct answers!`);
+
+  // Leaderboard
+  const board = [...FAKE_LEADERBOARD, {name: appState.playerName + ' (YOU)', score, games: appState.totalGames, avatar:'⚡', isYou: true}].sort((a,b) => b.score - a.score);
+  const pc = ['g','s','b'], pl = ['🥇','🥈','🥉'];
+  document.getElementById('leaderboard').innerHTML = board.slice(0,6).map((e,i) => `
+    <div class="lb-row ${e.isYou?'you':''}">
+      <div class="lb-pos ${pc[i]||''}">${pl[i]||(i+1)}</div>
+      <div class="lb-avatar" style="background:rgba(255,106,0,.15)">${e.avatar||'⚡'}</div>
+      <div class="lb-info"><div class="lb-name">${e.name}${e.isYou?'<span class="you-tag">YOU</span>':''}</div><div class="lb-games">${e.games} games played</div></div>
+      <div class="lb-score">${e.score.toLocaleString()}</div>
+    </div>`).join('');
+
+  showPage('results');
+}
+
+function restartQuiz() { startQuiz(); }
+
+// ══════════════════════════════════════════
+// GLOBAL LEADERBOARD
+// ══════════════════════════════════════════
+function updateGlobalLeaderboard() {
+  const board = [...FAKE_LEADERBOARD, {name: appState.playerName + ' (YOU)', score: appState.bestScore, games: appState.totalGames, avatar:'⚡', isYou: true}].sort((a,b) => b.score - a.score);
+  const pc = ['g','s','b'], pl = ['🥇','🥈','🥉'];
+  document.getElementById('globalLeaderboard').innerHTML = board.map((e,i) => `
+    <div class="lb-row ${e.isYou?'you':''}">
+      <div class="lb-pos ${pc[i]||''}">${pl[i]||(i+1)}</div>
+      <div class="lb-avatar" style="background:rgba(255,106,0,.15)">${e.avatar||'⚡'}</div>
+      <div class="lb-info"><div class="lb-name">${e.name}${e.isYou?'<span class="you-tag">YOU</span>':''}</div><div class="lb-games">${e.games} games played</div></div>
+      <div class="lb-score">${e.score.toLocaleString()}</div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════
+// PROFILE & ACHIEVEMENTS
+// ══════════════════════════════════════════
+function updateProfile() {
+  document.getElementById('profileName').textContent = appState.playerName.toUpperCase();
+  document.getElementById('pGames').textContent = appState.totalGames;
+  document.getElementById('pBest').textContent = appState.bestScore.toLocaleString();
+  const acc = appState.totalAnswered > 0 ? Math.round((appState.totalCorrectAll / appState.totalAnswered) * 100) : 0;
+  document.getElementById('pAcc').textContent = acc + '%';
+  const badge = document.getElementById('profilePlanBadge');
+  if (appState.plan === 'legend') { badge.className='plan-badge plan-legend'; badge.textContent='👑 LEGENDARY'; }
+  else if (appState.plan === 'pro') { badge.className='plan-badge plan-pro'; badge.textContent='🔥 SUPER SAIYAN'; }
+  else { badge.className='plan-badge plan-free'; badge.textContent='⚪ FREE PLAN'; }
+  // Achievements
+  const grid = document.getElementById('achievementGrid');
+  grid.innerHTML = ACHIEVEMENTS_DEF.map(a => `
+    <div class="achievement ${appState.achievements.includes(a.id) ? 'unlocked' : ''}">
+      <div class="achievement-icon">${a.icon}</div>
+      <div class="achievement-name">${a.name}</div>
+    </div>`).join('');
+}
+
+function unlockAchievement(id) {
+  if (!appState.achievements.includes(id)) { appState.achievements.push(id); saveState(); }
+}
+
+function resetProfile() {
+  if (confirm('Reset all progress? This cannot be undone!')) {
+    appState = {playerName:appState.playerName,plan:'free',totalGames:0,bestScore:0,totalAnswered:0,totalCorrectAll:0,questionsUsedToday:0,lastPlayDate:'',achievements:[]};
+    saveState(); updateProfile();
+  }
+}
+
+// ══════════════════════════════════════════
+// SUBSCRIPTION
+// ══════════════════════════════════════════
+function selectPlan(plan) {
+  if (plan === 'free') return;
+  appState.plan = plan;
+  if (plan !== 'free') unlockAchievement('subscriber');
+  saveState();
+  alert(`🎉 Welcome to ${plan === 'pro' ? 'Super Saiyan' : 'Legendary'} plan!\n\nIn a real app, payment would be processed here via Stripe.\n\nYou now have unlimited access!`);
+  showPage('home');
+}
+
+// ══════════════════════════════════════════
+// VOICE
+// ══════════════════════════════════════════
+function speak(text, onEnd) {
+  if (!voiceEnabled || !window.speechSynthesis) { if (onEnd) onEnd(); return; }
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.rate = 0.92; utt.pitch = 1.0; utt.volume = 1.0;
+  const voices = window.speechSynthesis.getVoices();
+  const pref = voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) || voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang.startsWith('en'));
+  if (pref) utt.voice = pref;
+  document.getElementById('voiceIndicator').classList.add('show');
+  utt.onend = () => { document.getElementById('voiceIndicator').classList.remove('show'); if (onEnd) onEnd(); };
+  utt.onerror = () => { document.getElementById('voiceIndicator').classList.remove('show'); if (onEnd) onEnd(); };
+  window.speechSynthesis.speak(utt);
+}
+function speakQ(q) {
+  if (!voiceEnabled) return;
+  const ol = ['A','B','C','D'];
+  speak(`${q.q}. Options: ${q.opts.map((o,i) => `${ol[i]}. ${o}`).join('. ')}`);
+}
+
+// ══════════════════════════════════════════
+// PWA INSTALL
+// ══════════════════════════════════════════
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferredInstallPrompt = e;
+  document.getElementById('installBanner').style.display = 'flex';
+});
+function installApp() {
+  if (deferredInstallPrompt) { deferredInstallPrompt.prompt(); deferredInstallPrompt.userChoice.then(() => { deferredInstallPrompt = null; document.getElementById('installBanner').style.display = 'none'; }); }
+}
+window.addEventListener('appinstalled', () => { document.getElementById('installBanner').style.display = 'none'; });
+
+// ══════════════════════════════════════════
+// STARS INIT
+// ══════════════════════════════════════════
+(function(){
+  const bg = document.querySelector('.bg-fixed');
+  for (let i = 0; i < 100; i++) {
+    const s = document.createElement('div'); s.className = 'star';
+    const sz = Math.random() * 2.5;
+    s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-duration:${2+Math.random()*4}s;animation-delay:${Math.random()*4}s`;
+    bg.appendChild(s);
+  }
+})();
+
+// Init voices
+window.speechSynthesis && window.speechSynthesis.getVoices();
+window.speechSynthesis && (window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices());
+
+// Register Service Worker (PWA offline support)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+
+// Boot
+loadState();
+</script>
+</body>
+</html>
